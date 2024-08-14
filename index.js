@@ -3,6 +3,7 @@ const app = express();
 const { connectDB } = require("./config/db");
 const Question = require("./models/Question");
 const Quiz = require("./models/Quiz");
+const Answer = require("./models/Answer");
 
 app.use(express.json());
 
@@ -16,8 +17,18 @@ app.get("/quizzes", async (req, res) => {
 
 //all questions get by quiz id
 app.get("/questions/quiz/:id", async (req, res) => {
-    const quiz = await Quiz.findById(req.params.id).populate("questions");
-    res.json(quiz);
+    let quiz = await Quiz.findById(req.params.id).populate("questions")
+    let answers = await Answer.find({ question: { $in: quiz.questions } });
+
+   let reponse = quiz.questions.map((question) => {
+        let answer = answers.filter((answer) => answer.question == question.id);
+        return {
+            question: question,
+            answers: answer
+        }
+    });
+    
+    res.json(reponse);
 });
 
 

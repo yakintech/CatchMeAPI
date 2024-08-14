@@ -9,6 +9,9 @@ const AnswerSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Question',
         required: true
+    },
+    isCorrect: {
+        type: Boolean
     }
 },
 {
