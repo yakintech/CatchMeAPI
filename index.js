@@ -5,6 +5,9 @@ const Question = require("./models/Question");
 const Quiz = require("./models/Quiz");
 const Answer = require("./models/Answer");
 
+
+const PORT = 8080 || process.env.PORT;
+
 app.use(express.json());
 
 connectDB();
@@ -32,7 +35,7 @@ app.get("/questions/quiz/:id", async (req, res) => {
 });
 
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
     console.log("Server is running on port 3000");
 }
 );
