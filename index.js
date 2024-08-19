@@ -35,6 +35,36 @@ app.get("/questions/quiz/:id", async (req, res) => {
 });
 
 
+app.post("/auth", async (req, res) => {
+    const { email } = req.body;
+    
+    //email validation with regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email" });
+    }
+
+    //kullanıcı kayıtlıysa kayıtlı email adresine email gönderilir ve confirmCode oluşturulur
+    let user = await User.findOne({ email });
+    var confirmCode = Math.floor(1000 + Math.random() * 9000);
+
+    if (!user) {
+        user = await User.create({ email, confirmCode });
+        //email send
+    }
+    else{
+        user.confirmCode = confirmCode;
+        await user.save();
+        //email send
+        //vldw qyyc husx wvka
+
+    }
+
+
+
+})
+
+
 app.listen(PORT, () => {
     console.log("Server is running on port 3000");
 }
