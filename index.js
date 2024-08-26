@@ -1,12 +1,15 @@
 const express = require("express");
 const app = express();
 const { connectDB } = require("./config/db");
-const Question = require("./models/Question");
 const Quiz = require("./models/Quiz");
 const Answer = require("./models/Answer");
+const { sendEmail } = require("./service/emailService");
+const { User } = require("./models/User");
 
 
 const PORT = 8080 || process.env.PORT;
+
+
 
 app.use(express.json());
 
@@ -50,18 +53,36 @@ app.post("/auth", async (req, res) => {
 
     if (!user) {
         user = await User.create({ email, confirmCode });
+        
         //email send
+        sendEmail(email, confirmCode);
+        return res.json({ id: user._id });
+
+
     }
     else{
         user.confirmCode = confirmCode;
         await user.save();
-        //email send
-        //vldw qyyc husx wvka
-
+        sendEmail(email, confirmCode);
+        return res.json({ id: user._id });
     }
 
+})
 
-
+app.post("/confirm", async (req, res) => {
+    const { id, confirmCode } = req.body;
+    let user = await User.findById(id);
+    if (!user) {
+        return res.status(400).json({ message: "Invalid id" });
+    }
+    if (user.confirmCode == confirmCode) {
+        user.confirmed = true;
+        await user.save();
+        return res.json({ message: "Confirmed" });
+    }
+    else {
+        return res.status(400).json({ message: "Invalid confirm code" });
+    }
 })
 
 
