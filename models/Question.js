@@ -12,4 +12,8 @@ const QuestionSchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('Question', QuestionSchema);
+const Question = mongoose.model('Question', QuestionSchema);
+
+module.exports = {
+    Question
+}

@@ -6,6 +6,7 @@ const Answer = require("./models/Answer");
 const { sendEmail } = require("./service/emailService");
 const { User } = require("./models/User");
 const { Category } = require("./models/Category");
+const { Question } = require("./models/Question");
 
 
 const PORT = 8080 || process.env.PORT;
@@ -40,6 +41,7 @@ app.get("/questions/quiz/:id", async (req, res) => {
     let quiz = await Quiz.findById(req.params.id).populate("questions")
     let answers = await Answer.find({ question: { $in: quiz.questions } });
 
+    console.log("answers", answers);
     let reponse = quiz.questions.map((question) => {
         let answer = answers.filter((answer) => answer.question == question.id);
         return {
