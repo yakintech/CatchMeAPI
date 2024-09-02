@@ -11,7 +11,11 @@ const QuizSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Question',
         required: true
-    }]
+    }],
+    category: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Category'
+    },
 },
 {
     timestamps: true

@@ -5,6 +5,7 @@ const Quiz = require("./models/Quiz");
 const Answer = require("./models/Answer");
 const { sendEmail } = require("./service/emailService");
 const { User } = require("./models/User");
+const { Category } = require("./models/Category");
 
 
 const PORT = 8080 || process.env.PORT;
@@ -14,6 +15,19 @@ const PORT = 8080 || process.env.PORT;
 app.use(express.json());
 
 connectDB();
+
+
+app.get("/categories", async (req, res) => {
+    const categories = await Category.find();
+    res.json(categories);
+});
+
+app.post("/categories", async (req, res) => {
+    const { name } = req.body;
+    const category = await Category.create({ name });
+    res.json(category);
+}
+);
 
 
 app.get("/quizzes", async (req, res) => {
@@ -26,21 +40,21 @@ app.get("/questions/quiz/:id", async (req, res) => {
     let quiz = await Quiz.findById(req.params.id).populate("questions")
     let answers = await Answer.find({ question: { $in: quiz.questions } });
 
-   let reponse = quiz.questions.map((question) => {
+    let reponse = quiz.questions.map((question) => {
         let answer = answers.filter((answer) => answer.question == question.id);
         return {
             question: question,
             answers: answer
         }
     });
-    
+
     res.json(reponse);
 });
 
 
 app.post("/auth", async (req, res) => {
     const { email } = req.body;
-    
+
     //email validation with regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -53,14 +67,14 @@ app.post("/auth", async (req, res) => {
 
     if (!user) {
         user = await User.create({ email, confirmCode });
-        
+
         //email send
         sendEmail(email, confirmCode);
         return res.json({ id: user._id });
 
 
     }
-    else{
+    else {
         user.confirmCode = confirmCode;
         await user.save();
         sendEmail(email, confirmCode);
