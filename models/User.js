@@ -12,7 +12,18 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    
+    birthday: {
+        type: Date,
+    },
+    firstName: {
+        type: String,
+    },
+    lastName: {
+        type: String
+    },
+    profilePicture: {
+        type: String
+    }
 },
 {
     timestamps: true,

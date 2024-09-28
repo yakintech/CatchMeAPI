@@ -47,6 +47,14 @@ app.get("/questions/quiz/:id", async (req, res) => {
     res.json(response);
 });
 
+app.post("/auth/gmail", async (req, res) => {
+    const { email } = req.body;
+    var result = await User.create({ email, isconfirmed: true });
+
+    res.json({"id": result._id});
+
+})
+
 app.post("/auth", async (req, res) => {
     const { email } = req.body;
 
@@ -89,41 +97,11 @@ app.post("/confirm", async (req, res) => {
     }
 });
 
-// Session CRUD endpoints
-app.get("/sessions", async (req, res) => {
-    const sessions = await Session.find().populate("user answers");
-    res.json(sessions);
-});
-
-app.get("/sessions/:id", async (req, res) => {
-    const session = await Session.findById(req.params.id).populate("user answers");
-    if (!session) {
-        return res.status(404).json({ message: "Session not found" });
-    }
-    res.json(session);
-});
 
 app.post("/sessions", async (req, res) => {
-    const { user, answers } = req.body;
-    const session = await Session.create({ user, answers });
-    res.json(session);
-});
-
-app.put("/sessions/:id", async (req, res) => {
-    const { user, answers } = req.body;
-    const session = await Session.findByIdAndUpdate(req.params.id, { user, answers }, { new: true });
-    if (!session) {
-        return res.status(404).json({ message: "Session not found" });
-    }
-    res.json(session);
-});
-
-app.delete("/sessions/:id", async (req, res) => {
-    const session = await Session.findByIdAndDelete(req.params.id);
-    if (!session) {
-        return res.status(404).json({ message: "Session not found" });
-    }
-    res.json({ message: "Session deleted" });
+    const { userId, answers } = req.body;
+    const session = await Session.create({ user: userId, answers });
+    res.json(session.id);
 });
 
 app.listen(PORT, () => {
